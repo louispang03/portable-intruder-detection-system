@@ -1,0 +1,8 @@
+{
+    "pushover_user_key": "",
+    "pushover_api_token": "",
+    "camera_source": "0",
+    "confidence_threshold": 0.5,
+    "notification_cooldown_seconds": 60,
+    "known_faces_dir": "known_faces"
+}

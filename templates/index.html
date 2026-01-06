@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                Live Feed
+            </div>
+            <div class="card-body text-center">
+                <img src="{{ url_for('video_feed') }}" class="img-fluid rounded" style="max-height: 500px;"
+                    alt="Live Video Feed">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                System Status
+            </div>
+            <div class="card-body" id="status-box">
+                <p><strong>Status:</strong> <span id="status-text">Loading...</span></p>
+                <p><strong>Known Faces:</strong> <span id="faces-count">0</span></p>
+                <button id="toggle-btn" class="btn btn-danger w-100 mt-2" onclick="toggleDetection()">Stop
+                    Detection</button>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                Add Owner Face
+            </div>
+            <div class="card-body">
+                <form action="/upload" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Upload Photo</label>
+                        <input class="form-control" type="file" id="file" name="file" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Upload</button>
+                </form>
+                <div class="mt-2 small text-muted">
+                    Upload a clear photo of the owner's face. The filename will be used as the name.
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                Camera Settings
+            </div>
+            <div class="card-body">
+                <form action="/config" method="post">
+                    <div class="mb-3">
+                        <label for="camera_source" class="form-label">Camera Source</label>
+                        <input type="text" class="form-control" id="camera_source" name="camera_source"
+                            placeholder="0 or http://192.168.1.x:8080/video">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Update Source</button>
+                </form>
+                <div class="mt-2 small text-muted">
+                    Enter '0' for webcam or an IP URL for phone camera.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateStatus() {
+        fetch('/api/status')
+            .then(response => response.json())
+            .then(data => {
+                const statusText = document.getElementById('status-text');
+                const toggleBtn = document.getElementById('toggle-btn');
+
+                if (data.active) {
+                    statusText.textContent = 'Armed (Detecting)';
+                    statusText.className = 'status-running';
+                    toggleBtn.textContent = 'Stop Detection';
+                    toggleBtn.className = 'btn btn-danger w-100 mt-2';
+                } else {
+                    statusText.textContent = 'Disarmed (Paused)';
+                    statusText.className = 'status-stopped';
+                    toggleBtn.textContent = 'Start Detection';
+                    toggleBtn.className = 'btn btn-success w-100 mt-2';
+                }
+
+                document.getElementById('faces-count').textContent = data.faces_loaded;
+
+                const sourceInput = document.getElementById('camera_source');
+                if (document.activeElement !== sourceInput && !sourceInput.value && data.camera_source) {
+                    sourceInput.placeholder = data.camera_source;
+                }
+            });
+    }
+
+    function toggleDetection() {
+        fetch('/toggle_detection', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                updateStatus(); // Refresh immediately
+            });
+    }
+
+    setInterval(updateStatus, 2000);
+    updateStatus();
+</script>
+{% endblock %}

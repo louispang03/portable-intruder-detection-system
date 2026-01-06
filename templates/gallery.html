@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Intruder Gallery</h2>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for image in images %}
+    <div class="col">
+        <div class="card h-100">
+            <img src="{{ url_for('uploaded_file', filename=image) }}" class="card-img-top" alt="Intruder">
+            <div class="card-body">
+                <h5 class="card-title">{{ image }}</h5>
+                <p class="card-text text-muted">Detected at {{ image.split('.')[0] }}</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info">No intruder images captured yet.</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

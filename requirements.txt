@@ -1,0 +1,7 @@
+ultralytics
+face_recognition
+opencv-python
+requests
+numpy
+flask
+python-dotenv
