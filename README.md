@@ -103,11 +103,3 @@ The `config.json` file is created automatically. You can modify it via the Web U
     "known_faces_dir": "known_faces"
 }
 ```
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-[MIT License](LICENSE)
